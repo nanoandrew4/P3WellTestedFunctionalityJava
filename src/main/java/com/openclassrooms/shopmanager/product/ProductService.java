@@ -114,10 +114,11 @@ public class ProductService {
         return errors;
     }
 
+    /**
+     * Removes a product from the database. The product is not removed from the cart, that must be done by the caller.
+     * @param productId ID of the product to delete
+     */
     public void deleteProduct(Long productId) {
-        // TODO what happens if a product has been added to a cart and has been later removed from the inventory ?
-        // delete the product form the cart by using the specific method
-        // => the choice is up to the student
         productRepository.deleteById(productId);
     }
 
@@ -136,5 +137,4 @@ public class ProductService {
             }
         }
     }
-
 }

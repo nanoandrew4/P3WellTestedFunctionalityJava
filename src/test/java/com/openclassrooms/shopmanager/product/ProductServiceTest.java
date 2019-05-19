@@ -1,17 +1,18 @@
 package com.openclassrooms.shopmanager.product;
 
+import com.openclassrooms.shopmanager.order.Cart;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 /**
@@ -199,14 +200,7 @@ public class ProductServiceTest {
         });
         when(productRepository.findAll()).thenReturn(products);
 
-        final ProductModel productModel = new ProductModel();
-        productModel.setQuantity("1");
-        productModel.setPrice("1.01");
-        productModel.setName("Name");
-        productModel.setDescription("Desc");
-        productModel.setDetails("Details");
-
-        productService.createProduct(productModel);
+        productService.createProduct(createValidTestProductModel());
         final List<Product> storedProducts = productService.getAllProducts();
 
         assertEquals(1, storedProducts.size());
@@ -215,5 +209,112 @@ public class ProductServiceTest {
         assertEquals(1.01, storedProducts.get(0).getPrice(), 0);
         assertEquals("Desc", storedProducts.get(0).getDescription());
         assertEquals("Details", storedProducts.get(0).getDetails());
+    }
+
+    @Test
+    public void ProductDeletion_DeleteExistingProduct_ProductDeletedSuccessfully() {
+        final List<Product> products = new LinkedList<>();
+
+        when(productRepository.save(any(Product.class))).then(invocation -> {
+            final Product savedProduct = invocation.getArgument(0);
+            savedProduct.setId(System.currentTimeMillis());
+            products.add(savedProduct);
+            return savedProduct;
+        });
+        when(productRepository.findAll()).thenReturn(products);
+        doAnswer(invocation -> {
+            products.removeIf(product -> invocation.getArgument(0).equals(product.getId()));
+            return null;
+        }).when(productRepository).deleteById(anyLong());
+
+        productService.createProduct(createValidTestProductModel());
+        productService.deleteProduct(productService.getAllProducts().get(0).getId());
+
+        assertTrue(products.isEmpty());
+    }
+
+    @Test
+    public void getByProductId_RetrieveStoredProduct_ReturnRequestedProduct() {
+        when(productRepository.findById(anyLong())).thenReturn(Optional.of(createValidTestProduct()));
+
+        final Product retrievedProduct = productService.getByProductId(1L);
+
+        assertEquals("Name", retrievedProduct.getName());
+        assertEquals(1, retrievedProduct.getQuantity());
+        assertEquals(1.01, retrievedProduct.getPrice(), 0);
+        assertEquals("Desc", retrievedProduct.getDescription());
+        assertEquals("Details", retrievedProduct.getDetails());
+    }
+
+    @Test
+    public void getByProductId_ProductDoesNotExist_ThrowNoSuchElementException() {
+        when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        try {
+            productService.getByProductId(1L);
+            fail();
+        } catch (Exception e) {
+            assertTrue(e instanceof NoSuchElementException);
+        }
+    }
+
+    @Test
+    public void updateProductQuantities_ModifyStockQuantities_AllProductQuantitiesModified() {
+        final List<Product> products = new LinkedList<>();
+        for (int i = 0; i < 4; i++) {
+            final Product newProduct = createValidTestProduct();
+            newProduct.setId((long) i);
+            newProduct.setQuantity(i + 1);
+            newProduct.setName(newProduct.getName() + i);
+            products.add(newProduct);
+        }
+
+        when(productRepository.findById(anyLong())).then(invocation ->
+                products.stream().filter(product -> product.getId().equals(invocation.getArgument(0))).findFirst()
+        );
+        doAnswer(invocation -> {
+            final Product productToBeRemoved = invocation.getArgument(0);
+            products.removeIf(product -> product.getId().equals(productToBeRemoved.getId()));
+            return null;
+        }).when(productRepository).delete(any(Product.class));
+        when(productRepository.save(any(Product.class))).then(invocation -> {
+            final Product productToBeSaved = invocation.getArgument(0);
+            products.removeIf(product -> product.getId().equals(productToBeSaved.getId()));
+            products.add(productToBeSaved);
+            return productToBeSaved;
+        });
+
+        final Cart cart = new Cart();
+        int[] quantitiesToAddToCart = {1, 2, 1, 2};
+        products.forEach(product -> cart.addItem(product, quantitiesToAddToCart[Math.toIntExact(product.getId())]));
+
+        // First two products should be removed from the 'products' list, since they are out of stock
+        productService.updateProductQuantities(cart);
+
+        assertEquals(2, products.size());
+        assertEquals("Name2", products.get(0).getName());
+        assertEquals(2, products.get(0).getQuantity());
+        assertEquals("Name3", products.get(1).getName());
+        assertEquals(2, products.get(1).getQuantity());
+    }
+
+    private ProductModel createValidTestProductModel() {
+        final ProductModel productModel = new ProductModel();
+        productModel.setQuantity("1");
+        productModel.setPrice("1.01");
+        productModel.setName("Name");
+        productModel.setDescription("Desc");
+        productModel.setDetails("Details");
+        return productModel;
+    }
+
+    private Product createValidTestProduct() {
+        final Product productModel = new Product();
+        productModel.setQuantity(1);
+        productModel.setPrice(1.01);
+        productModel.setName("Name");
+        productModel.setDescription("Desc");
+        productModel.setDetails("Details");
+        return productModel;
     }
 }

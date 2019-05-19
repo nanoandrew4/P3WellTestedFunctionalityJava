@@ -14,7 +14,6 @@ public class OrderService {
 
     private Cart cart = new Cart();
 
-
     @Autowired
     public OrderService(OrderRepository orderRepository, ProductService productService) {
         this.orderRepository = orderRepository;
@@ -57,7 +56,6 @@ public class OrderService {
     }
 
     public void createOrder(Order order) {
-
         order.setLines(getCart().getCartLineList());
         saveOrder(order);
         this.cart.clear();

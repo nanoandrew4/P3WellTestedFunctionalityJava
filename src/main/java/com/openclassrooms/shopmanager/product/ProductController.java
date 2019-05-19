@@ -1,5 +1,6 @@
 package com.openclassrooms.shopmanager.product;
 
+import com.openclassrooms.shopmanager.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +17,12 @@ public class ProductController {
 
     private ProductService productService;
 
+    private OrderService orderService;
+
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(final ProductService productService, final OrderService orderService) {
         this.productService = productService;
+        this.orderService = orderService;
     }
 
     @GetMapping(value = {"/products", "/"})
@@ -55,6 +59,7 @@ public class ProductController {
 
     @PostMapping("/admin/deleteProduct")
     public String deleteProduct(@RequestParam("delProductId") Long delProductId, Model model) {
+        orderService.removeFromCart(delProductId);
         productService.deleteProduct(delProductId);
         model.addAttribute("products", productService.getAllAdminProducts());
 
