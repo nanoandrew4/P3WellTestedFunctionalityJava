@@ -5,6 +5,8 @@ import com.openclassrooms.shopmanager.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
+
 
 @Service
 public class OrderService {
@@ -56,7 +58,7 @@ public class OrderService {
     }
 
     public void createOrder(Order order) {
-        order.setLines(getCart().getCartLineList());
+        order.setLines(new LinkedList<>(getCart().getCartLineList()));
         saveOrder(order);
         this.cart.clear();
     }
