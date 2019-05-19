@@ -61,7 +61,7 @@ public class ProductService {
      * @param potentialDouble String to check
      * @return True if the string is a double, false otherwise
      */
-    private boolean isStringDouble(final String potentialDouble) {
+    public boolean isStringDouble(final String potentialDouble) {
         try {
             Double.parseDouble(potentialDouble);
         } catch (NumberFormatException nfe) {
@@ -76,7 +76,7 @@ public class ProductService {
      * @param potentialInt String to check
      * @return True if the string is an integer, false otherwise
      */
-    private boolean isStringInteger(final String potentialInt) {
+    public boolean isStringInteger(final String potentialInt) {
         try {
             Integer.parseInt(potentialInt);
         } catch (NumberFormatException nfe) {
@@ -94,17 +94,17 @@ public class ProductService {
      */
     public List<String> checkProductIsValid(final ProductModel productModel) {
         final List<String> errors = new LinkedList<>();
-        if (productModel.getName().trim().isEmpty())
+        if (productModel.getName() == null || productModel.getName().trim().isEmpty())
             errors.add("product.MissingName");
 
-        if (productModel.getPrice().trim().isEmpty())
-            errors.add("product.MissingProduct");
+        if (productModel.getPrice() == null || productModel.getPrice().trim().isEmpty())
+            errors.add("product.MissingPrice");
         else if (!isStringDouble(productModel.getPrice()))
             errors.add("product.PriceNotANumber");
         else if (Double.valueOf(productModel.getPrice()) <= 0D)
             errors.add("product.PriceNotGreaterThanZero");
 
-        if (productModel.getQuantity().trim().isEmpty())
+        if (productModel.getQuantity() == null || productModel.getQuantity().trim().isEmpty())
             errors.add("product.MissingQuantity");
         else if (!isStringInteger(productModel.getQuantity()))
             errors.add("product.QuantityNotAnInteger");
