@@ -34,6 +34,7 @@ public class Cart {
 
         }else {
             CartLine newCartLine = new CartLine();
+            newCartLine.setOrderLineID((int) (System.currentTimeMillis() % Integer.MAX_VALUE));
             newCartLine.setQuantity(quantity);
             newCartLine.setProduct(product);
             cartLineList.add(newCartLine);

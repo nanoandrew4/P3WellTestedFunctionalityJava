@@ -7,7 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -250,12 +253,8 @@ public class ProductServiceTest {
     public void getByProductId_ProductDoesNotExist_ThrowNoSuchElementException() {
         when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        try {
-            productService.getByProductId(1L);
-            fail();
-        } catch (Exception e) {
-            assertTrue(e instanceof NoSuchElementException);
-        }
+        final Product retrievedProduct = productService.getByProductId(1L);
+        assertNull(retrievedProduct);
     }
 
     @Test
