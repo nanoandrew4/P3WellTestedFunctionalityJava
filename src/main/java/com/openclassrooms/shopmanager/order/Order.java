@@ -5,21 +5,21 @@ import java.util.List;
 
 public class Order {
 
-        private Long id;
+    private Long id;
 
-        private List<CartLine> lines;
+    private List<CartLine> lines;
 
-        private LocalDate date = LocalDate.now();
+    private LocalDate date = LocalDate.now();
 
-        private String name;
+    private String name;
 
-        private String address;
+    private String address;
 
-        private String city;
+    private String city;
 
-        private String zip;
+    private String zip;
 
-        private String country;
+    private String country;
 
     public Long getId() {
         return id;
