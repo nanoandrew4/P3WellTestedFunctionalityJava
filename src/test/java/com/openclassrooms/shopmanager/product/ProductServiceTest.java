@@ -89,7 +89,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_MissingName_MissingNameErrorMessageReturned() {
+    public void createProduct_MissingName_MissingNameErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setQuantity("1");
         productModel.setPrice("1");
@@ -103,7 +103,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_MissingPrice_MissingPriceErrorMessageReturned() {
+    public void createProduct_MissingPrice_MissingPriceErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setQuantity("1");
         productModel.setName("Name");
@@ -117,7 +117,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_PriceNaN_PriceNotANumberErrorMessageReturned() {
+    public void createProduct_PriceNaN_PriceNotANumberErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setQuantity("1");
         productModel.setPrice("Price");
@@ -132,7 +132,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_PriceNotGreaterThanZero_PriceNotGreaterThanZeroErrorMessageReturned() {
+    public void createProduct_PriceNotGreaterThanZero_PriceNotGreaterThanZeroErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setQuantity("1");
         productModel.setPrice("-1.01");
@@ -147,7 +147,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_MissingQuantity_MissingQuantityErrorMessageReturned() {
+    public void createProduct_MissingQuantity_MissingQuantityErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setPrice("1.01");
         productModel.setName("Name");
@@ -161,7 +161,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_QuantityNotAnInteger_QuantityNotAnIntegerErrorMessageReturned() {
+    public void createProduct_QuantityNotAnInteger_QuantityNotAnIntegerErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setQuantity("Quantity");
         productModel.setPrice("1.01");
@@ -176,7 +176,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_QuantityNotGreaterThanZero_QuantityNotGreaterThanZeroErrorMessageReturned() {
+    public void createProduct_QuantityNotGreaterThanZero_QuantityNotGreaterThanZeroErrorMessageReturned() {
         final ProductModel productModel = new ProductModel();
         productModel.setQuantity("-1");
         productModel.setPrice("1.01");
@@ -191,7 +191,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void ProductCreation_ValidProduct_ProductCreationSuccessful() {
+    public void createProduct_ValidProduct_createProductSuccessful() {
         final List<Product> products = new LinkedList<>();
         when(productRepository.save(any(Product.class))).then(invocation -> {
             final Product savedProduct = invocation.getArgument(0);
@@ -309,12 +309,12 @@ public class ProductServiceTest {
     }
 
     private Product createValidTestProduct() {
-        final Product productModel = new Product();
-        productModel.setQuantity(1);
-        productModel.setPrice(1.01);
-        productModel.setName("Name");
-        productModel.setDescription("Desc");
-        productModel.setDetails("Details");
-        return productModel;
+        final Product product = new Product();
+        product.setQuantity(1);
+        product.setPrice(1.01);
+        product.setName("Name");
+        product.setDescription("Desc");
+        product.setDetails("Details");
+        return product;
     }
 }
